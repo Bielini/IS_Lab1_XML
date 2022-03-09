@@ -20,14 +20,15 @@ namespace IS_Lab1_XML
             string postac = "";
             string nPS = "";
             string pO = "";
+            string nazwaProduktu = "";
+
 
             int countSameName = 0;
-            string maxTabsName = "";
-            string maxCreamName = "";
 
             var drugsAppears = new Dictionary<String, int>();
             var tabsPodmiots = new Dictionary<String, int>();
             var creamPodmiots = new Dictionary<String, int>();
+            var activeSubs = new Dictionary<String, int>();
 
 
             reader.MoveToContent();
@@ -40,6 +41,7 @@ namespace IS_Lab1_XML
                     postac = reader.GetAttribute("postac");
                     nPS = reader.GetAttribute("nazwaPowszechnieStosowana");
                     pO = reader.GetAttribute("podmiotOdpowiedzialny");
+                    nazwaProduktu = reader.GetAttribute("nazwaProduktu");
 
 
                     maxPodmiot(pO, postac, tabsPodmiots, "Tabletki");
@@ -47,11 +49,18 @@ namespace IS_Lab1_XML
                     sameNameDiffTypeCount(nPS, drugsAppears);
                     count = creamSubCount(postac, nPS, count);
                 }
+
+                if (reader.NodeType == XmlNodeType.Element && reader.Name == "substancjaCzynna")
+                {
+                    maxPodmiot(nazwaProduktu, activeSubs);
+                }
             }
 
 
             List<Tuple<string, int>> listOfTabs = toSortedListConverter(tabsPodmiots);
             List<Tuple<string, int>> listOfCreams = toSortedListConverter(creamPodmiots);
+            List<Tuple<string, int>> listOfActiveSubs = toSortedListConverter(activeSubs);
+
             countSameName = drugsAppearsCounter(countSameName, drugsAppears);
 
 
@@ -61,8 +70,14 @@ namespace IS_Lab1_XML
             Console.WriteLine("Podmiot z największą produkcją tabletek to:  {0}", getMaxProducer(listOfTabs));
             Console.WriteLine("Podmiot z największą produkcją kremów to:  {0}", getMaxProducer(listOfCreams));
 
+
             Console.WriteLine("\nNajwięksi producenci kremów to: ");
             printToPositionOfList(listOfCreams, 3);
+
+            Console.WriteLine("\nProdukty z największą ilością substancji czynncych to : ");
+            printToPositionOfList(listOfActiveSubs, 3);
+
+
         }
 
         private static void maxPodmiot(string pO, string postac, Dictionary<string, int> tabsPodmiots, string type)
@@ -71,6 +86,18 @@ namespace IS_Lab1_XML
             {
                 if (type == postac)
                     tabsPodmiots[pO] += 1;
+            }
+            else
+            {
+                tabsPodmiots.Add(pO, 1);
+            }
+        }
+        private static void maxPodmiot(string pO, Dictionary<string, int> tabsPodmiots)
+        {
+            if (tabsPodmiots.ContainsKey(pO))
+            {
+
+                tabsPodmiots[pO] += 1;
             }
             else
             {

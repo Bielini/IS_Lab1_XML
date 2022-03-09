@@ -17,33 +17,39 @@ namespace IS_Lab1_XML
             int count = 0;
 
             int countSameName = 0;
-
+            string nazwaProduktu = "";
 
             var drugsAppears = new Dictionary<String, int>();
             var tabsPodmiots = new Dictionary<String, int>();
             var creamPodmiots = new Dictionary<String, int>();
+            var activeSubs = new Dictionary<String, int>();
 
 
 
             var drugs = doc.GetElementsByTagName("produktLeczniczy");
+
+
             foreach (XmlNode d in drugs)
             {
                 postac = d.Attributes.GetNamedItem("postac").Value;
                 nPS = d.Attributes.GetNamedItem("nazwaPowszechnieStosowana").Value;
                 pO = d.Attributes.GetNamedItem("podmiotOdpowiedzialny").Value;
-
+                nazwaProduktu = d.Attributes.GetNamedItem("nazwaProduktu").Value;
 
                 maxPodmiot(pO, postac, tabsPodmiots, "Tabletki");
                 maxPodmiot(pO, postac, creamPodmiots, "Krem");
 
+
                 sameNameDiffTypeCount(nPS, drugsAppears);
                 count = creamSubCount(postac, nPS, count);
+
 
             }
 
 
             List<Tuple<string, int>> listOfTabs = toSortedListConverter(tabsPodmiots);
             List<Tuple<string, int>> listOfCreams = toSortedListConverter(creamPodmiots);
+            List<Tuple<string, int>> listOfActiveSubs = toSortedListConverter(activeSubs);
             countSameName = drugsAppearsCounter(countSameName, drugsAppears);
 
 
@@ -54,6 +60,8 @@ namespace IS_Lab1_XML
 
             Console.WriteLine("\nNajwięksi producenci kremów to: ");
             printToPositionOfList(listOfCreams, 3);
+
+
         }
 
 
@@ -63,6 +71,19 @@ namespace IS_Lab1_XML
             {
                 if (type == postac)
                     tabsPodmiots[pO] += 1;
+            }
+            else
+            {
+                tabsPodmiots.Add(pO, 1);
+            }
+        }
+
+        private static void maxPodmiot(string pO, Dictionary<string, int> tabsPodmiots)
+        {
+            if (tabsPodmiots.ContainsKey(pO))
+            {
+
+                tabsPodmiots[pO] += 1;
             }
             else
             {
